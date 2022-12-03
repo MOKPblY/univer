@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  pg_db:
+    image: postgres
+    container_name: postgres-univer
+    environment:
+      - POSTGRES_USER=sam
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=univerdb
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+  web:
+    build: .
+    container_name: web-univer
+    ports:
+      - 8000:8000
+    depends_on:
+      - pg_db
+  redis:
+    image: redis
+    container_name: redis-celery-univer
+  worker:
+    container_name: celery-worker-univer
+    build: .
+    volumes:
+      - ./dbdata:/user/src/app/dbdata
+    command: "celery -A univer worker --loglevel=INFO -P eventlet"
+    depends_on:
+      - web
+      - redis
+
+
+volumes:
+  dbdata:
+
