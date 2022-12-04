@@ -25,8 +25,6 @@ services:
   worker:
     container_name: celery-worker-univer
     build: .
-    volumes:
-      - ./dbdata:/user/src/app/dbdata
     command: "celery -A univer worker --loglevel=INFO -P eventlet"
     depends_on:
       - web
